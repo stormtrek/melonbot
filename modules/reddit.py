@@ -5,7 +5,7 @@ from json import loads
 import re
 
 def getThread(msg, redditList, channel):
-    match = re.search(' ([\w\d\_]+)\s*([\d]+)?\s*$', msg)
+    match = re.search('^ ([\w\d\_]+)\s*([\d]+)?\s*$', msg)
     if match:
         subreddit = match.group(1)
         pos = match.group(2)
