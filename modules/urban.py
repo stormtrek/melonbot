@@ -3,16 +3,15 @@ from decode import decode
 import html
 import re
 
-
 def getDefn(msg):
-    m = re.search(' (.*?)((\[|\()([\d]+)(\]|\)))?\s*$', msg)
+    m = re.search('^ (.*?)((\[|\()([\d]+)(\]|\)))?\s*$', msg)
     if m:
         word = m.group(1).replace(' ', '+')
         pos = m.group(4)
         try:
             content = decode(urlopen('http://urbandictionary.com/define.php?term=' + word).read())
-        except Exception as e:
-            return 'Error: ', e
+        except:
+            return '.: could not reach server :.'
         if pos == None:
             m = re.search('meaning\'>\s(.*?)\s</div>', content)
             if m:
