@@ -10,7 +10,7 @@ channels = []
 password =
 username =
 nick = 'mel0nbot'
-allowed_users = []
+allowed_hosts = []
 irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 EST = ['melon', 'yano']
@@ -99,8 +99,7 @@ def toggle(msg, channel):
 
         
 def is_allowed(host):
-    hostList = host.split('/')
-    if hostList[-1] in allowed_users:
+    if host in allowed_hosts:
         return True
     else: return False
 
