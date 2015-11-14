@@ -9,6 +9,3 @@ class message(object):
             self.prefix = self.prefix[1:]
 
 
-
-            
-

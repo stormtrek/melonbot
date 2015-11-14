@@ -7,3 +7,5 @@ def decode(bytes):
         except UnicodeDecodeError:
             text = bytes.decode('CP1252')
     return text
+
+

@@ -3,3 +3,5 @@ def send(response, irc, channel = None):
         irc.send(bytes('PRIVMSG %s :%s\r\n' % (channel, response), 'UTF-8'))
     else:
         irc.send(bytes('%s\r\n' % response, 'UTF-8'))
+
+
