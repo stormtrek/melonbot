@@ -163,7 +163,7 @@ def main():
             print(data)
         except: pass
         try:
-            mes = message.message(data)
+            mes = message.Message(data)
             handle_message(mes)
         except Exception: pass
         ping = re.search('^PING ([\w\.:]+)', data)
