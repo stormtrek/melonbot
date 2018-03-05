@@ -32,13 +32,22 @@ if config['ssl']:
     irc = ssl.wrap_socket(irc)
 
 joined_channels = []
-
-toggle_list = {} # {'#melontest': {'snarf': True}}
+toggle_list = {}
 
 urban_list = {}
-
 reddit_list = {}
 reddit_rand_list = {}
+
+reminder_threads = {}
+rem_lock = threading.RLock()
+
+terminate = False
+sleep_duration = 10
+
+error_template = "Exception of type {0} occurred: {1!r}"
+
+rate_limited = config['rate_limited']
+threaded_commands = ['wolfram', 'coinprice']
 
 commands = {
                 "admin_control": ['mel', 'melon'],
@@ -94,35 +103,13 @@ commands = {
                 "wealth_ranking": ["wealth", "ranking"],
                 "weather": ["weather", "w", "we"],
                 "wolfram": ["wolfram", "wolf", "wa", "wo"]
-            }    
-
-rate_limit = {     
-                 'unscramble': {'rate': 1.0, 'per': 10.0, 'allowance': 1.0, 'last_check': None, 'all_channels': False, 'channels': ['#melontest']},
-                 'weather': {'rate': 1.0, 'per': 6.0, 'allowance': 1.0, 'last_check': None, 'all_channels': True}
-             }
-
-threaded_commands = ['wolfram', 'coinprice']
-
-reminder_threads = {}
-rem_lock = threading.RLock()
-
-terminate = False
-sleep_duration = 10
-
-error_template = "Exception of type {0} occurred: {1!r}"
+            }
 
 def write_config():
     global config
 
     with open(args.config, 'w') as fd:
         json.dump(config, fd, indent=2)
-
-
-def mel_quit(msg):
-    if re.search('^\s+quit\s*$', msg):
-        global terminate
-        terminate = True
-        send('QUIT', irc)
 
 
 def handle_join(channel):
@@ -193,6 +180,13 @@ def mel_part(msg, channel):
         send('QUIT', irc)
 
 
+def mel_quit(msg):
+    if re.search('^\s+quit\s*$', msg):
+        global terminate
+        terminate = True
+        send('QUIT', irc)
+
+
 def mel_channels(msg, channel):
     chans = re.search('^\s+channels\s*$', msg)
     if chans:
@@ -255,9 +249,9 @@ def is_threaded(prefix):
 
 
 def is_rate_limited(prefix, channel):
-    for command in rate_limit:
+    for command in rate_limited:
         if prefix in commands[command]:
-            if rate_limit[command]['all_channels'] or channel in rate_limit[command]['channels']:
+            if rate_limited[command]['all_channels'] or channel in rate_limited[command]['channels']:
                 return True
 
 
@@ -423,16 +417,16 @@ def main():
             
         if valid_message: 
             try:
-                if mes.nick in config['tg_relays']: #Telegram relays
+                if mes.nick in config['tg_relays']:
                     m = re.search('<(.*?)>', data)
                     mes = message.Message(re.sub('<.*?> ', '', data, 1))
                     mes.nick = '@' + m.group(1)[3:][:-1]
                 
                 if is_rate_limited(mes.prefix, mes.channel):
                     key = get_command_name(mes.prefix)
-                    if not rate_limit[key]['last_check']:
-                        rate_limit[key]['last_check'] = datetime.datetime.now()
-                    rate, per, allowance, last_check = rate_limit[key]['rate'], rate_limit[key]['per'], rate_limit[key]['allowance'], rate_limit[key]['last_check'] 
+                    if not rate_limited[key]['last_check']:
+                        rate_limited[key]['last_check'] = datetime.datetime.now()
+                    rate, per, allowance, last_check = rate_limited[key]['rate'], rate_limited[key]['per'], rate_limited[key]['allowance'], rate_limited[key]['last_check'] 
                     current = datetime.datetime.now()
                     time_passed = (current - last_check).total_seconds()
                     last_check = current
@@ -444,7 +438,7 @@ def main():
                     else:
                         handle_message(mes)
                         allowance -= 1.0
-                    rate_limit[key]['rate'], rate_limit[key]['per'], rate_limit[key]['allowance'], rate_limit[key]['last_check'] = rate, per, allowance, last_check
+                    rate_limited[key]['rate'], rate_limited[key]['per'], rate_limited[key]['allowance'], rate_limited[key]['last_check'] = rate, per, allowance, last_check
                 elif is_threaded(mes.prefix):
                     t = threading.Thread(target=handle_message, args=[mes])
                     t.daemon = True
