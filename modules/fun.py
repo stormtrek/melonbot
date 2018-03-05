@@ -13,7 +13,7 @@ def pet(caller, nick):
 
 
 def cookie(msg):
-    match = re.search('^ ([\w\d@_-]+)( ([\w\d\- ]+))?\s*$', msg)
+    match = re.search('^\s+([\w\d@_-]+)( ([\w\d\- ]+))?\s*$', msg)
     if match:
         if match.group(3):
             return "\x01ACTION hands {} a plate of {} cookies and a glass of milk\001".format(match.group(1), match.group(3).strip())
@@ -22,7 +22,7 @@ def cookie(msg):
 
 
 def cake(msg):
-    match = re.search('^ ([\w\d@_-]+)( ([\w\d\- ]+))?\s*$', msg)
+    match = re.search('^\s+([\w\d@_-]+)( ([\w\d\- ]+))?\s*$', msg)
     if match:
         if match.group(3):
             return "\x01ACTION hands {} a slice of {} cake and a plastic fork\001".format(match.group(1), match.group(3).strip())
@@ -31,7 +31,7 @@ def cake(msg):
 		
 		
 def pie(msg):
-    match = re.search('^ ([\w\d@_-]+)( ([\w\d\'\- ]+))?\s*$', msg)
+    match = re.search('^\s+([\w\d@_-]+)( ([\w\d\'\- ]+))?\s*$', msg)
     if match:
         if match.group(3):
             return "\x01ACTION hands {} a slice of {} pie and a cheap plastic fork\001".format(match.group(1), match.group(3).strip())
@@ -39,7 +39,7 @@ def pie(msg):
             return "\x01ACTION hands {} a slice of pie and a cheap plastic fork\001".format(match.group(1))
 
 def pizza(msg):
-    match = re.search('^ ([\w\d@_-]+)( ([\w\d\- ]+))?\s*$', msg)
+    match = re.search('^\s+([\w\d@_-]+)( ([\w\d\- ]+))?\s*$', msg)
     if match:
         if match.group(3):
             return "\x01ACTION serves {} a slice of {} pizza\001".format(match.group(1), match.group(3).strip())
@@ -48,7 +48,7 @@ def pizza(msg):
 
 
 def tea(msg):
-    match = re.search('^ ([\w\d@_-]+)( ([\w\d\- ]+))?\s*$', msg)
+    match = re.search('^\s+([\w\d@_-]+)( ([\w\d\- ]+))?\s*$', msg)
     if match:
         if match.group(3):
             return "\x01ACTION hands {} a cup of {} tea and a plate of crumpets\001".format(match.group(1), match.group(3).strip())
@@ -57,7 +57,7 @@ def tea(msg):
 
 
 def coffee(msg):
-    match = re.search('^ ([\w\d@_-]+)( ([\w\d\- ]+))?\s*$', msg)
+    match = re.search('^\s+([\w\d@_-]+)( ([\w\d\- ]+))?\s*$', msg)
     if match:
         if match.group(3):
             return "\x01ACTION hands {} a cup of {} coffee and a plate of mini donuts.\001".format(match.group(1), match.group(3).strip())
