@@ -17,14 +17,14 @@ def getSyn(word):
     else:
         return '.: no synonyms available :.'
 
-def getDefn(word):
-    try:
-        content = decode(urlopen('http://dictionary.reference.com/browse/' + word.replace(' ', '+').strip()).read())
-    except:
-        return '.: that entry does not exist :.'
-    m = re.search('def-content">(.*?)</div>', content, re.DOTALL)
-    if m:
-        defn = re.sub('<.*?>', '', m.group(1))
-        return re.sub('\n', '', html.unescape(defn))
-    else:
-        return '.: no definitions available :.'
+##def getDefn(word):
+##    try:
+##        content = decode(urlopen('http://dictionary.reference.com/browse/' + word.replace(' ', '+').strip()).read())
+##    except:
+##        return '.: that entry does not exist :.'
+##    m = re.search('def-content">(.*?)</div>', content, re.DOTALL)
+##    if m:
+##        defn = re.sub('<.*?>', '', m.group(1))
+##        return re.sub('\n', '', html.unescape(defn).strip())
+##    else:
+##        return '.: no definitions available :.'

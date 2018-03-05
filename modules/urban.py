@@ -1,36 +1,55 @@
-from urllib.request import urlopen
-from decode import decode
+from urllib.parse import quote_plus
+from datetime import datetime
+import requests
 import html
 import re
 
-def getDefn(msg):
-    m = re.search('^ (.*?)((\[|\()([\d]+)(\]|\)))?\s*$', msg)
+position_reset = 1800 #30 minutes
+ 
+def getDefn(msg, urbanList, channel):
+    m = re.search('^\s+(.*?)((\[|\()([\d]+)(\]|\)))?\s*$', msg)
     if m:
-        word = m.group(1).replace(' ', '+').strip()
+        word = m.group(1).strip().lower()
         pos = m.group(4)
-        if word:
-            try:
-                content = decode(urlopen('http://urbandictionary.com/define.php?term=' + word).read())
-            except:
-                return '.: could not reach server :.'
-            if pos == None:
-                m = re.search('meaning\'>\s(.*?)\s</div>', content)
-                if m:
-                    defn = m.group(1)
-                else:
-                    return '.: that word is not defined :.'
+        urbanList[channel][1] = word
+    else:
+        if not msg.strip():
+            if urbanList[channel][1]:
+                word = urbanList[channel][1]
+                pos = None
             else:
-                pos = int(pos) - 1
-                m = re.findall('meaning\'>\s(.*?)\s</div>', content)
-                if m:
-                    try:
-                        defn = m[pos]
-                    except:
-                        return 'entry ' + str(pos + 1) + ' does not exist'
-                else:
-                    return '.: that word is not defined :.'
-            defn = re.sub('<.*?>', '', defn)
-            return re.sub('\r', ' ↲', html.unescape(defn))
+                return 'please enter a word'
         else:
-            return '.: no search term :.'
+            return 'syntax: .ud <word> [<entry_position>]*'
+    try:
+        r = requests.get('http://api.urbandictionary.com/v0/define', params={'term': word})
+    except:
+        return 'could not reach server'
+    data = r.json()['list']
+    if len(data) == 0:
+        return 'that word is not defined'
+    if not pos:
+        if word not in urbanList[channel][0]:
+            urbanList[channel][0][word] = [1, None]
+        if urbanList[channel][0][word][1]:
+            if (datetime.now() - urbanList[channel][0][word][1]).total_seconds() > position_reset:
+                urbanList[channel][0][word][0] = 1
+        pos = urbanList[channel][0][word][0]
+        urbanList[channel][0][word] = [pos + 1, datetime.now()]
+        if urbanList[channel][0][word][0] > len(data):
+            urbanList[channel][0][word][0] = 1
+    else:
+        urbanList[channel][0][word] = [int(pos) + 1, datetime.now()]
+        if urbanList[channel][0][word][0] > len(data):
+            urbanList[channel][0][word][0] = 1
+    pos = int(pos) - 1
+    try:
+        defn = bold('(' + str(pos + 1) + '. ' + data[pos]['word'] + ') ') + data[pos]['definition'].strip() + ' ' + bold('[ex.]') + ' ' + data[pos]['example'].strip()
+        defn = re.sub('(\n\n)+', ' ⇒ ', defn)
+        return re.sub('(\r\n)+', ' ⇒ ', defn)
+    except:
+        return 'entry ' + str(pos + 1) + ' does not exist'
+
+def bold(text):
+    return '\x02' + text + '\x02'
 

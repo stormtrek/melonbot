@@ -1,7 +1,10 @@
 def send(response, irc, channel = None):
     if channel:
-        irc.send(bytes('PRIVMSG %s :%s\r\n' % (channel, response), 'UTF-8'))
+        msg = 'PRIVMSG %s :%s' % (channel, response)
     else:
-        irc.send(bytes('%s\r\n' % response, 'UTF-8'))
+        msg = response
+
+    irc.send(bytes('%s\r\n' % msg, 'UTF-8'))
+    print('<< %s' % msg)
 
 

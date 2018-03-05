@@ -1,0 +1,25 @@
+{
+  "host": "asuna.6697.eu",
+  "port": 6697,
+  "ssl": true,
+  "nick": "melonbot",
+  "user": "melonbot",
+  "realname": "melonbot",
+  "password": "",
+  "channels": [
+    "#melontest"
+  ],
+  "greetings": {
+    "#melontest": "Greetings #melontest!"
+  },
+  "disable_features": {
+    "snarf": ["#melontest"]
+  },
+  "admins": [],
+  "tg_relays": ["tg"], 
+  "maxSendLen": 420,
+  "wolfram_alpha_key": "",
+  "wunderground_key": "",
+  "bitly_key": "",
+  "reddit_user_agent": ""
+}

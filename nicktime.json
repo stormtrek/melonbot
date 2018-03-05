@@ -1,0 +1,15 @@
+{
+  "tzList": {
+    "US_Eastern": "US/Eastern",
+  },
+  "users": {
+    "US_Eastern": {
+      "ExampleGuy": {
+        "display": "Display Name",
+        "nicks": [
+          "example"
+        ]
+      }
+    }
+  }
+}
