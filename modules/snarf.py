@@ -21,7 +21,7 @@ def getTitle(msg, response):
         title = title.text.strip()
         if title:
             title = re.sub('\r', ' ', removeLinksFromTitle(title))
-            return re.sub('\n', ' ', 'Title: ' + title[:441].strip())
+            return re.sub('\n', ' ', 'Title: ' + title.strip())
     return response
 
 def removeLinksFromTitle(link):
