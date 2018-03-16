@@ -22,6 +22,7 @@ def save_reminder(reminder, time_until, nick, channel, thread_list, rem_lock, ir
     if time_until < 0 :
         return nick + ', your reminder was set for a time in the past. Please try rephrasing your command. Specifying the location instead of using a time zone may help.'
 
+    #CTCP ACTION
     perform_action = re.search('^/(\w+) (.*)', reminder)
     if perform_action:
         reply = '\x01ACTION %s %s\x01' % (end_verb(perform_action.group(1).lower()), perform_action.group(2))
@@ -106,7 +107,7 @@ def in_reminder(msg, nick, channel, thread_list, rem_lock, irc):
 def at_reminder(msg, nick, channel, thread_list, rem_lock, irc):
     m = re.search('^\s+(.*?)\s+send\s+(.*)', msg, re.IGNORECASE)
     if not m:
-        return '\x02Correct syntax\x02: .at <what_time> send <reminder> or /<action> \x02Example\x02: .at 5pm Paris time on January 30 2018 send <message>, sends a reminder at 5pm CET on January 30, 2018'
+        return '\x02Correct syntax\x02: .at <what_time> send <reminder> \x02Example\x02: .at 5pm Paris time on January 30 2018 send <message>, sends a reminder at 5pm CET on January 30, 2018'
     
     when = m.group(1)
     reminder = m.group(2).strip()
