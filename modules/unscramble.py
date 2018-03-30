@@ -73,7 +73,7 @@ def generate_scramble(channel, irc):
     first_hint.daemon = True
     first_hint.start()
 
-    return bold(scrambled_word)
+    return 'Unscramble: {0}'.format(bold(scrambled_word))
 
 def check_answer(answer, nick, channel, response, irc):
     global word, first_hint, second_hint, check_for_answer
