@@ -1,10 +1,23 @@
 import threading
+import argparse
 import random
 import time
 import re
 from send import send
+from json import load
 from modules import money
 from formatting import bold
+from collections import OrderedDict
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--config', default='config.json', help='configuration file')
+args = parser.parse_args()
+
+with open(args.config) as fd:
+    config = load(fd, object_pairs_hook=OrderedDict)
+
+enabled_channels = config['unscramble_enabled_channels']
+answerable_channels = config['unscramble_answerable_channels']
 
 word = ''
 scrambled_word = ''
@@ -16,10 +29,6 @@ current_hint = ''
 check_for_answer = False
 
 second_winner_thread = threading.Thread()
-
-enabled_channels = ['#lounge', '#melontest']
-answerable_channels = ['#melon', '#lounge', '#melontest']
-
 
 def generate_scramble(channel, irc):
     if channel not in enabled_channels:

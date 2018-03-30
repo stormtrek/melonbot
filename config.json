@@ -25,5 +25,7 @@
   "wolfram_alpha_key": "",
   "wunderground_key": "",
   "bitly_key": "",
-  "reddit_user_agent": ""
+  "reddit_user_agent": "",
+  "unscramble_enabled_channels": ["#melontest"],
+  "unscramble_answerable_channels": ["#melontest", "#melontest2"] 
 }
