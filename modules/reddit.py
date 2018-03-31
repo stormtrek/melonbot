@@ -18,9 +18,9 @@ with open(args.config) as fd:
     config = load(fd, object_pairs_hook=OrderedDict)
 
 user_agent = config['reddit_user_agent']
+sfw_channels = config['reddit_sfw_channels']
 
 paramsList = {'front': {'hot': '?limit=100', 'top': '?sort=top&t=week&limit=100'}, 'random': {'hot': '?limit=100', 'top': '?sort=top&t=week&limit=100'}}
-sfwChannels = ['#lounge']
 resetAfter = 3600
 maxCharLength = 420
 
@@ -108,8 +108,8 @@ def getThread(msg, redditList, channel, top=False):
     if data[pos]['data']['over_18']:
         if 'nsfw' not in title[0].lower():
             title[0] = '\x0304[NSFW]\x03 ' + title[0]
-        if channel in sfwChannels:
-                nsfw = True
+        if channel in sfw_channels:
+            nsfw = True
     title[1] = get_OG_media(title[1])
     if top:
         title[3] += '/top'
@@ -206,8 +206,8 @@ def getRandThread(msg, redditList, channel, randList, top=False):
     if data['over_18']:
         if 'nsfw' not in title[0].lower():
             title[0] = '\x0304[NSFW]\03 ' + title[0]
-        if channel in sfwChannels:
-                nsfw = True
+        if channel in sfw_channels:
+            nsfw = True
     title[1] = get_OG_media(title[1])
     if top:
         title[3] += '/top'

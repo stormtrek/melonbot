@@ -26,6 +26,7 @@
   "wunderground_key": "",
   "bitly_key": "",
   "reddit_user_agent": "",
+  "reddit_sfw_channels": ["#melontest"],
   "unscramble_enabled_channels": ["#melontest"],
   "unscramble_answerable_channels": ["#melontest", "#melontest2"] 
 }
