@@ -6,9 +6,7 @@
   "user": "melonbot",
   "realname": "melonbot",
   "password": "",
-  "channels": [
-    "#melontest"
-  ],
+  "channels": ["#melontest"],
   "greetings": {
     "#melontest": "Greetings #melontest!"
   },
@@ -19,6 +17,7 @@
 	"unscramble": {"rate": 1.0, "per": 10.0, "allowance": 1.0, "last_check": null, "all_channels": false, "channels": ["#melontest"]},
 	"weather": {"rate": 1.0, "per": 6.0, "allowance": 1.0, "last_check": null, "all_channels": true}
   },
+  "threaded_commands": ["wolfram", "coinprice"],
   "admins": [],
   "tg_relays": ["tg"], 
   "maxSendLen": 420,

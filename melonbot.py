@@ -47,7 +47,7 @@ sleep_duration = 10
 error_template = "Exception of type {0} occurred: {1!r}"
 
 rate_limited = config['rate_limited']
-threaded_commands = ['wolfram', 'coinprice']
+threaded_commands = config['threaded_commands']
 
 commands = {
                 "admin_control": ['mel', 'melon'],
@@ -362,7 +362,6 @@ def handle_message(mes):
             elif mes.prefix in commands['wealth_ranking']: response = money.get_wealth_ranking()
             elif mes.prefix in commands['tz_list']: response = nicktime.get_tz_list()
             elif mes.prefix in commands['tz_info']: response = nicktime.get_tz_info(mes.msg.strip())
-            elif mes.prefix in commands['sfan5']: response = 'http://i.imgur.com/ERebecg.jpg'
             else:
                 response = nicktime.getTime(mes.fullMsg, response) # check for nicktime
                 if mes.channel == config['nick'] and is_allowed(mes): # lets melonbot send messages to specific channels. ex: .#lounge hello
