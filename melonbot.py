@@ -84,7 +84,8 @@ commands = {
                 "reddit_top": ["reddittop", "rt"],
                 "reddit_world_news": ["worldnews", "news"],
                 "register": ["register"],
-                "reload": ['reload'],
+                "reload_module": ['reload'],
+                "reload_configuration": ["refresh"],
                 "rem_id": ["remid", "id"],
                 "reminders": ["reminders", "rems"],
                 "sfan5": ["sfan5", "stefan"],
@@ -231,11 +232,26 @@ def check_formatting(msg):
 def reload_module(module):
     try:
         reload(globals()[module])
-        return 'reload successful'
+        return 'Reload successful'
     except Exception as e:
         traceback.print_exc()
         return error_template.format(type(e).__name__, e.args)
 
+
+def reload_config():
+    global config
+    global toggle_list
+    
+    with open(args.config) as fd:
+        try:
+            config = json.load(fd, object_pairs_hook=OrderedDict)
+            for channel in joined_channels:
+                toggle_list[channel] = toggle_set(channel)
+            return 'Configuration reloaded'
+        except Exception as e:
+            traceback.print_exc()
+            return error_template.format(type(e).__name__, e.args)
+        
         
 def is_allowed(mes):
     hostmask = '%s!%s@%s' % (mes.nick, mes.user, mes.host)
@@ -296,7 +312,8 @@ def handle_message(mes):
                 if module:
                     reload(globals()[module])
             elif mes.prefix in commands['toggle'] and is_allowed(mes): response = toggle(mes.msg, mes.channel)
-            elif mes.prefix in commands['reload'] and is_allowed(mes): response = reload_module(mes.msg.strip())
+            elif mes.prefix in commands['reload_module'] and is_allowed(mes): response = reload_module(mes.msg.strip())
+            elif mes.prefix in commands['reload_configuration'] and is_allowed(mes): response = reload_config()
             elif mes.prefix in commands['dictionary']: response = wolfram.waSearch2(mes.msg)
             elif mes.prefix in commands['synonym']: response = refwork.getSyn(mes.msg)
             elif mes.prefix in commands['weather']: response = weather.getCond(mes.msg)
@@ -345,6 +362,7 @@ def handle_message(mes):
             elif mes.prefix in commands['wealth_ranking']: response = money.get_wealth_ranking()
             elif mes.prefix in commands['tz_list']: response = nicktime.get_tz_list()
             elif mes.prefix in commands['tz_info']: response = nicktime.get_tz_info(mes.msg.strip())
+            elif mes.prefix in commands['sfan5']: response = 'http://i.imgur.com/ERebecg.jpg'
             else:
                 response = nicktime.getTime(mes.fullMsg, response) # check for nicktime
                 if mes.channel == config['nick'] and is_allowed(mes): # lets melonbot send messages to specific channels. ex: .#lounge hello
