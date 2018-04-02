@@ -31,10 +31,10 @@ check_for_answer = False
 second_winner_thread = threading.Thread()
 
 def generate_scramble(channel, irc):
+    global word, first_hint, second_hint, current_hint, scrambled_word, check_for_answer
+    
     if channel not in enabled_channels:
         return 'Disabled here. Please play in {0}'.format(enabled_channels[0])
-    
-    global word, first_hint, second_hint, current_hint, scrambled_word, check_for_answer
 
     if second_winner_thread.isAlive():
         return
@@ -42,10 +42,8 @@ def generate_scramble(channel, irc):
     if first_hint.isAlive() or second_hint.isAlive():
         return 'New scramble cannot be generated until all hints are given'
 
-    previous_word = ''
     if word:
-        previous_word = word
-        current_hint = ''
+        return 'There is currently a scramble in play. Use .show to display the current scramble or .skip to skip it.'
         
     word = random.choice(word_list)
     characters = list(word)
@@ -63,9 +61,6 @@ def generate_scramble(channel, irc):
                 scrambled_list = []
                 
     check_for_answer = True
-    if previous_word:
-        message = 'Previous word was \x02{0}\x02'.format(previous_word)
-        send(message, irc, channel)
     
     time.sleep(1)
 
@@ -85,7 +80,7 @@ def generate_scramble(channel, irc):
     return 'Unscramble: {0}'.format(bold(scrambled_word))
 
 def check_answer(answer, nick, channel, response, irc):
-    global word, first_hint, second_hint, check_for_answer
+    global first_hint, second_hint
 
     if channel not in answerable_channels:
         return response
@@ -142,6 +137,28 @@ def handle_winners(nick):
         check_for_answer = False
 
         return True
+
+def skip_scramble():
+    global word, current_hint, scrambled_word, check_for_answer
+
+    if not word:
+        return 'No scramble to skip'
+
+    if second_winner_thread.isAlive():
+        return
+
+    if first_hint.isAlive() or second_hint.isAlive():
+        return 'Scramble cannot be skipped until all hints are given'
+
+    previous_word = word
+
+    word = ''
+    current_hint = ''
+    scrambled_word = ''
+    check_for_answer = False
+
+    return 'Previous word was \x02{0}\x02'.format(previous_word)
+    
 
 def second_winner_timer():
     global word, current_hint, scrambled_word, check_for_answer

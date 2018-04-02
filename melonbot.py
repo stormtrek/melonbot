@@ -92,6 +92,7 @@ commands = {
                 "reminders": ["reminders", "rems"],
                 "sfan5": ["sfan5", "stefan"],
                 "show_scramble": ["show"],
+                "skip_scramble": ["skip"],
                 "synonym": ["synonym", "syn", "s"],
                 "tea": ["tea"],
                 "time": ["time"],
@@ -358,6 +359,7 @@ def handle_message(mes):
             elif mes.prefix in commands['notes']: response = notes.view_notes(mes.nick)
             elif mes.prefix in commands['unscramble']: response = unscramble.generate_scramble(mes.channel, irc)
             elif mes.prefix in commands['show_scramble']: response = unscramble.show_current_scramble()
+            elif mes.prefix in commands['skip_scramble']: response = unscramble.skip_scramble()
             elif mes.prefix in commands['wealth_ranking']: response = money.get_wealth_ranking()
             elif mes.prefix in commands['tz_list']: response = nicktime.get_tz_list()
             elif mes.prefix in commands['tz_info']: response = nicktime.get_tz_info(mes.msg.strip())
