@@ -32,9 +32,11 @@ if config['ssl']:
     irc = ssl.wrap_socket(irc)
 
 joined_channels = []
+
 toggle_list = {}
 
 urban_list = {}
+
 reddit_list = {}
 reddit_rand_list = {}
 
@@ -203,7 +205,7 @@ def toggle_set(channel):
     return featuresDict
 
 
-def toggle_check(feature, channel):
+def toggle_check(feature, channel):            
     if channel in toggle_list:
         not_disabled = toggle_list[channel].get(feature, True)
         return not_disabled
@@ -240,13 +242,10 @@ def reload_module(module):
 
 def reload_config():
     global config
-    global toggle_list
     
     with open(args.config) as fd:
         try:
             config = json.load(fd, object_pairs_hook=OrderedDict)
-            for channel in joined_channels:
-                toggle_list[channel] = toggle_set(channel)
             return 'Configuration reloaded'
         except Exception as e:
             traceback.print_exc()
