@@ -124,7 +124,9 @@ def get_wealth_ranking():
 
     ranking_list = []
     for idx, val in enumerate(sorted_list[:ranking_size]):
-        user = val['user'][:1] + '\u200b' + val['user'][1:]
+        user = val['user']
+        if val['user'][0] != '@':
+            user = val['user'][:1] + '\u200b' + val['user'][1:]
         ranking_list.append('\x02({0})\x02 {1}: {2}'.format(str(idx + 1), bold(user), val['amount']))
 
     return '[\x02Wealth Ranking\x02]  ' + ' — '.join(ranking_list)
