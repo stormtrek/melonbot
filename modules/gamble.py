@@ -1,17 +1,29 @@
+"""
+Module which enables the gambling of melon coins.
+"""
+
+from collections import OrderedDict
+from formatting import bold
 from modules import money
+from json import load
+import argparse
 import random
 import json
 import re
 
-def bold(text):
-    return '\x02' + text + '\x02'
+parser = argparse.ArgumentParser()
+parser.add_argument('--config', default='config.json', help='configuration file')
+args = parser.parse_args()
 
-gamblingAllowed = ['##test', '#melon', '#casino']
-gamblingAllowed2 = [bold('#melon') + ' (https://telegram.me/joinchat/B1vfQz-4uWQeGe63CM3RwA)', bold('#casino') + ' (https://telegram.me/joinchat/B1vfQz8ipzZXHqGJEFoa1Q)']
+with open(args.config) as fd:
+    config = load(fd, object_pairs_hook=OrderedDict)
+
+gambling_allowed = config['gambling_allowed']
+gambling_allowed_tg_links = config['gambling_allowed_tg_links']
 
 def gamble(msg, nick, channel):
-    if channel not in gamblingAllowed:
-        return 'gambling is only allowed in: ' + ', '.join(gamblingAllowed2)
+    if channel not in gambling_allowed:
+        return 'gambling is only allowed in: ' + ', '.join(gambling_allowed_tg_links if gambling_allowed_tg_links else gambling_allowed)
     m = re.search('^ (\-?\d+)\s*?$', msg)
     if m:
         bet = int(m.group(1))
