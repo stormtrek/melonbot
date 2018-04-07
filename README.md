@@ -2,6 +2,6 @@
 
 Melonbot is a python IRC bot maintained by Andy Chan.
 
-#Requirements
+# Requirements
 
 Python 3.x is required.
