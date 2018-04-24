@@ -314,7 +314,7 @@ def handle_message(mes):
             elif mes.prefix in commands['toggle'] and is_allowed(mes): response = toggle(mes.msg, mes.channel)
             elif mes.prefix in commands['reload_module'] and is_allowed(mes): response = reload_module(mes.msg.strip())
             elif mes.prefix in commands['reload_configuration'] and is_allowed(mes): response = reload_config()
-            elif mes.prefix in commands['dictionary']: response = wolfram.waSearch2(mes.msg)
+            elif mes.prefix in commands['dictionary']: response = wolfram.waSearch(mes.msg, False, True)
             elif mes.prefix in commands['synonym']: response = refwork.getSyn(mes.msg)
             elif mes.prefix in commands['weather']: response = weather.getCond(mes.msg)
             elif mes.prefix in commands['translate']: response = google.translate(mes.msg)
