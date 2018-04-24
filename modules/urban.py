@@ -1,5 +1,6 @@
 from urllib.parse import quote_plus
 from datetime import datetime
+from formatting import bold
 import requests
 import html
 import re
@@ -44,12 +45,9 @@ def getDefn(msg, urbanList, channel):
             urbanList[channel][0][word][0] = 1
     pos = int(pos) - 1
     try:
-        defn = bold('(' + str(pos + 1) + '. ' + data[pos]['word'] + ') ') + data[pos]['definition'].strip() + ' ' + bold('[ex.]') + ' ' + data[pos]['example'].strip()
+        defn = '\x02({0}. {1})\x02 {2}{3}'.format(str(pos + 1), data[pos]['word'], data[pos]['definition'].strip(), bold(' [ex.] ') + data[pos]['example'].strip() if data[pos]['example'] else '')
         defn = re.sub('(\n\n)+', ' ⇒ ', defn)
         return re.sub('(\r\n)+', ' ⇒ ', defn)
     except:
         return 'entry ' + str(pos + 1) + ' does not exist'
-
-def bold(text):
-    return '\x02' + text + '\x02'
 
