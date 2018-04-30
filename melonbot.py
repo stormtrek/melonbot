@@ -32,24 +32,16 @@ if config['ssl']:
     irc = ssl.wrap_socket(irc)
 
 joined_channels = []
-
+rate_limited = config['rate_limited']
 toggle_list = {}
-
 urban_list = {}
-
 reddit_list = {}
 reddit_rand_list = {}
-
 reminder_threads = {}
 rem_lock = threading.RLock()
-
+error_template = "Exception of type {0} occurred: {1!r}"
 terminate = False
 sleep_duration = 10
-
-error_template = "Exception of type {0} occurred: {1!r}"
-
-rate_limited = config['rate_limited']
-threaded_commands = config['threaded_commands']
 
 commands = {
                 "admin_control": ['mel', 'melon'],
@@ -247,10 +239,18 @@ def reload_config():
     with open(args.config) as fd:
         try:
             config = json.load(fd, object_pairs_hook=OrderedDict)
+            reload_global_variables()
             return 'Configuration reloaded'
         except Exception as e:
             traceback.print_exc()
             return error_template.format(type(e).__name__, e.args)
+
+
+def reload_global_variables():
+    global rate_limited
+    
+    rate_limited = config['rate_limited']
+    print(rate_limited)
         
         
 def is_allowed(mes):
@@ -259,7 +259,7 @@ def is_allowed(mes):
 
 
 def is_threaded(prefix):
-    for command in threaded_commands:
+    for command in config['threaded_commands']:
         if prefix in commands[command]:
             return True
 
@@ -279,9 +279,8 @@ def get_command_name(prefix):
 
 def handle_message(mes):
     try:
+        #handle trigger messages and non-commands
         response = None
-        if toggle_check('snarf', mes.channel):
-            response = snarf.getTitle(mes.msg, response)
         if toggle_check('triggers', mes.channel):
             response = triggers.salutations(mes.msg, mes.nick, config['nick'], response)
             response = triggers.love(mes.msg, mes.nick, config['nick'], response)
@@ -291,6 +290,8 @@ def handle_message(mes):
             response = triggers.ayy(mes.msg, response)
             response = triggers.shrug(mes.msg, response)
             response = triggers.derp(mes.msg, response)
+        if toggle_check('snarf', mes.channel):
+            response = snarf.getTitle(mes.msg, response)
         response = memo.memo_check(mes.nick, response)
         response = unscramble.check_answer(mes.msg.lower().strip(), mes.nick, mes.channel, response, irc)
         if response:
@@ -300,7 +301,8 @@ def handle_message(mes):
             else:
                 send(response, irc, mes.channel)
             response = None
-            
+
+        #handle commands
         if mes.prefix:
             if mes.prefix in commands['admin_control'] and is_allowed(mes):
                 mel_quit(mes.msg)
@@ -309,8 +311,7 @@ def handle_message(mes):
                 mel_channels(mes.msg, mes.channel)
             elif mes.prefix in commands['modify'] and is_allowed(mes):
                 response, module = modify.modify(mes.msg)
-                if module:
-                    reload(globals()[module])
+                if module: reload(globals()[module])
             elif mes.prefix in commands['toggle'] and is_allowed(mes): response = toggle(mes.msg, mes.channel)
             elif mes.prefix in commands['reload_module'] and is_allowed(mes): response = reload_module(mes.msg.strip())
             elif mes.prefix in commands['reload_configuration'] and is_allowed(mes): response = reload_config()
@@ -439,7 +440,7 @@ def main():
                     m = re.search('<(.*?)>', data)
                     mes = message.Message(re.sub('<.*?> ', '', data, 1))
                     mes.nick = '@' + m.group(1)[3:][:-1]
-                
+                    
                 if is_rate_limited(mes.prefix, mes.channel):
                     key = get_command_name(mes.prefix)
                     if not rate_limited[key]['last_check']:
@@ -469,6 +470,7 @@ def main():
         if data[0:4] == 'PING':
             send(data.replace('I', 'O', 1), irc)
 
+        #join channels listed in config file
         if data.split()[1] == '376':
             send('JOIN %s' % ','.join(config['channels']), irc)
 
