@@ -7,7 +7,7 @@ def getSyn(word):
     try:
         content = decode(urlopen('http://www.thesaurus.com/browse/' + word.replace(' ', '+').strip()).read())
     except:
-        return '.: could not reach server :.'
+        return 'Could not reach server'
     m = re.findall('"text">(.*?)</span>\s*<s', content)
     if m:
         if len(m) > 10:
@@ -15,7 +15,7 @@ def getSyn(word):
         else:
             return ', '.join(m)
     else:
-        return '.: no synonyms available :.'
+        return 'No synonyms available'
 
 ##def getDefn(word):
 ##    try:
