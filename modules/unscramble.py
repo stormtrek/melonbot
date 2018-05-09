@@ -118,7 +118,7 @@ def handle_winners(nick):
         if second_winner_thread.isAlive() or not check_for_answer:
             return False
         
-        second_winner_thread = threading.Timer(1, second_winner_timer)
+        second_winner_thread = threading.Timer(1, reset_variables)
         second_winner_thread.daemon = True
         second_winner_thread.start()
         
@@ -131,16 +131,11 @@ def handle_winners(nick):
                 print('died before could cancel')
                 pass
             
-        word = ''
-        current_hint = ''
-        scrambled_word = ''
-        check_for_answer = False
+        reset_variables()
 
         return True
 
 def skip_scramble():
-    global word, current_hint, scrambled_word, check_for_answer
-
     if not word:
         return 'No scramble to skip'
 
@@ -152,15 +147,11 @@ def skip_scramble():
 
     previous_word = word
 
-    word = ''
-    current_hint = ''
-    scrambled_word = ''
-    check_for_answer = False
+    reset_variables()
 
     return 'Previous word was \x02{0}\x02'.format(previous_word)
-    
 
-def second_winner_timer():
+def reset_variables():
     global word, current_hint, scrambled_word, check_for_answer
     
     word = ''
