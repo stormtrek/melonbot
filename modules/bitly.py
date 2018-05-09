@@ -1,3 +1,7 @@
+"""
+Module for obtaining a bitly shortened link
+"""
+
 from collections import OrderedDict
 from urllib.request import urlopen
 from json import load, loads
@@ -7,7 +11,6 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', default='config.json', help='configuration file')
 args = parser.parse_args()
-
 with open(args.config) as fd:
     config = load(fd, object_pairs_hook=OrderedDict)
 

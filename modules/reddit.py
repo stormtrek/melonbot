@@ -232,7 +232,7 @@ def getRandThread(msg, redditList, channel, randList, top=False):
         return html.unescape(title[0]) + ' • /r/' + title[3] + ' \x0303•\x03 ' + 'http://redd.it/' + title[2] + ' \x0307•\x03 score: ' + str(title[4])
 
 def get_OG_media(link):
-    """ Retrieves the original image and video links from certain websites
+    """ Retrieves the original image and video links from Imgur and Gfycat
     """
     
     link = re.sub('(imgur.com/[^ ]+\.)gif(v)?', '\g<1>mp4', link)
