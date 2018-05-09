@@ -3,6 +3,12 @@ import json
 from formatting import bold
 from collections import OrderedDict
 
+try:
+    with open('pouch.json', 'x') as f:
+        f.write('{}')
+except FileExistsError:
+    pass
+
 def save(data, data_file):
     try:
         data_file.seek(0)

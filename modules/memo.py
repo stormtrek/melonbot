@@ -1,6 +1,11 @@
 import time, json, re
 from json.decoder import JSONDecodeError
 
+try:
+    with open('memo.json', 'x') as f:
+        f.write('{}')
+except FileExistsError:
+    pass
 
 def save_memo(msg, nick):
     

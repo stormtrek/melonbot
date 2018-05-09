@@ -3,6 +3,12 @@ import random, json
 
 items = {'wc': '\x0305wooden chest\x03'}
 
+try:
+    with open('chests.json', 'x') as f:
+        f.write('{}')
+except FileExistsError:
+    pass
+
 def open_chests(nick):
     with open('chests.json') as f:
         data = json.load(f)

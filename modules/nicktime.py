@@ -5,6 +5,15 @@ import re
 from collections import OrderedDict
 import json
 
+try:
+    with open('nicktime.json', 'x') as f:
+        f.write('{}')
+except FileExistsError:
+    with open('nicktime.json') as f:    
+        data = json.load(f, object_pairs_hook=OrderedDict)
+        tz_list = data['tzList']
+        users = data['users']
+
 with open('nicktime.json') as data_file:    
     data = json.load(data_file, object_pairs_hook=OrderedDict)
     tz_list = data['tzList']
