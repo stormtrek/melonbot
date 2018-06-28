@@ -107,7 +107,7 @@ def in_reminder(msg, nick, channel, thread_list, rem_lock, irc):
 def at_reminder(msg, nick, channel, thread_list, rem_lock, irc):
     m = re.search('^\s+(.*?)\s+send\s+(.*)', msg, re.IGNORECASE)
     if not m:
-        return '\x02Correct syntax\x02: .at <what_time> send <reminder> \x02Example\x02: .at 5pm Paris time on January 30 2018 send <message>, sends a reminder at 5pm CET on January 30, 2018'
+        return '\x02Correct syntax\x02: .at <what_time> SEND <reminder> \x02Example\x02: .at 5pm Paris time on January 30 2018 SEND <message>, sends a reminder at 5pm CET on January 30, 2018'
     
     when = m.group(1)
     reminder = m.group(2).strip()
