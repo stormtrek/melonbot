@@ -250,7 +250,6 @@ def reload_global_variables():
     global rate_limited
     
     rate_limited = config['rate_limited']
-    print(rate_limited)
         
         
 def is_allowed(mes):
@@ -429,6 +428,7 @@ def main():
             break
 
         valid_message = True
+        
         try:
             mes = message.Message(data)
         except Exception:
@@ -453,7 +453,7 @@ def main():
                     if (allowance > rate):
                         allowance = rate
                     if (allowance < 1.0):
-                        pass
+                        send('Please wait {} seconds in between calling this command.'.format(rate_limited[key]['per']), irc, mes.channel)
                     else:
                         handle_message(mes)
                         allowance -= 1.0
