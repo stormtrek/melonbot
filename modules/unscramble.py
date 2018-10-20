@@ -367,7 +367,6 @@ word_list = [
     'campaign',
     'can',
     'cancel',
-    'cancer',
     'candidate',
     'candle',
     'candy',
