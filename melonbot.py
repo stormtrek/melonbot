@@ -8,6 +8,7 @@ import ssl
 import threading
 import time
 import traceback
+import math
 import datetime
 import message
 from collections import OrderedDict
@@ -43,6 +44,7 @@ error_template = "Exception of type {0} occurred: {1!r}"
 terminate = False
 sleep_duration = 10
 
+#commands and the prefixes to trigger them
 commands = {
                 "admin_control": ['mel', 'melon'],
                 "add_note": ["addnote"],
@@ -82,7 +84,6 @@ commands = {
                 "reload_configuration": ["refresh"],
                 "rem_id": ["remid", "id"],
                 "reminders": ["reminders", "rems"],
-                "sfan5": ["sfan5", "stefan"],
                 "show_scramble": ["show"],
                 "skip_scramble": ["skip"],
                 "synonym": ["synonym", "syn", "s"],
@@ -278,7 +279,7 @@ def get_command_name(prefix):
 
 def handle_message(mes):
     try:
-        #handle trigger messages and non-commands
+        # handle trigger messages and non-commands
         response = None
         if toggle_check('triggers', mes.channel):
             response = triggers.salutations(mes.msg, mes.nick, config['nick'], response)
@@ -301,20 +302,24 @@ def handle_message(mes):
                 send(response, irc, mes.channel)
             response = None
 
-        #handle commands
+        # handle commands
         if mes.prefix:
-            if mes.prefix in commands['admin_control'] and is_allowed(mes):
-                mel_quit(mes.msg)
-                mel_part(mes.msg, mes.channel)
-                mel_join(mes.msg)
-                mel_channels(mes.msg, mes.channel)
-            elif mes.prefix in commands['modify'] and is_allowed(mes):
-                response, module = modify.modify(mes.msg)
-                if module: reload(globals()[module])
-            elif mes.prefix in commands['toggle'] and is_allowed(mes): response = toggle(mes.msg, mes.channel)
-            elif mes.prefix in commands['reload_module'] and is_allowed(mes): response = reload_module(mes.msg.strip())
-            elif mes.prefix in commands['reload_configuration'] and is_allowed(mes): response = reload_config()
-            elif mes.prefix in commands['dictionary']: response = wolfram.waSearch(mes.msg, False, True)
+            # admin commands
+            if is_allowed(mes):
+                if mes.prefix in commands['admin_control']:
+                    mel_quit(mes.msg)
+                    mel_part(mes.msg, mes.channel)
+                    mel_join(mes.msg)
+                    mel_channels(mes.msg, mes.channel)
+                elif mes.prefix in commands['modify']:
+                    response, module = modify.modify(mes.msg)
+                    if module: reload(globals()[module])
+                elif mes.prefix in commands['toggle']: response = toggle(mes.msg, mes.channel)
+                elif mes.prefix in commands['reload_module']: response = reload_module(mes.msg.strip())
+                elif mes.prefix in commands['reload_configuration']: response = reload_config()
+
+            # non-admin commands  
+            if mes.prefix in commands['dictionary']: response = wolfram.waSearch(mes.msg, False, True)
             elif mes.prefix in commands['synonym']: response = refwork.getSyn(mes.msg)
             elif mes.prefix in commands['weather']: response = weather.getCond(mes.msg)
             elif mes.prefix in commands['translate']: response = google.translate(mes.msg)
@@ -408,6 +413,7 @@ def main():
     global sleep_duration
     
     print('connecting to %s:%s%d' % (config['host'], '+' if config['ssl'] else '', config['port']))
+    
     try:
         irc.connect((config['host'], config['port']))
         sleep_duration = 10
@@ -445,7 +451,7 @@ def main():
                     key = get_command_name(mes.prefix)
                     if not rate_limited[key]['last_check']:
                         rate_limited[key]['last_check'] = datetime.datetime.now()
-                    rate, per, allowance, last_check = rate_limited[key]['rate'], rate_limited[key]['per'], rate_limited[key]['allowance'], rate_limited[key]['last_check'] 
+                    rate, per, allowance, last_check, start_time = rate_limited[key]['rate'], rate_limited[key]['per'], rate_limited[key]['allowance'], rate_limited[key]['last_check'], rate_limited[key]['start_time'] 
                     current = datetime.datetime.now()
                     time_passed = (current - last_check).total_seconds()
                     last_check = current
@@ -453,11 +459,15 @@ def main():
                     if (allowance > rate):
                         allowance = rate
                     if (allowance < 1.0):
-                        send('Please wait {} seconds in between calling this command.'.format(rate_limited[key]['per']), irc, mes.channel)
+                        time_passed_from_start = (current - start_time).total_seconds()
+                        if (time_passed_from_start > 2.0):
+                            remaining_time = math.ceil(per - time_passed_from_start)
+                            send('Please wait {} seconds to use this command again.'.format(remaining_time), irc, mes.channel)
                     else:
                         handle_message(mes)
+                        start_time = datetime.datetime.now()
                         allowance -= 1.0
-                    rate_limited[key]['rate'], rate_limited[key]['per'], rate_limited[key]['allowance'], rate_limited[key]['last_check'] = rate, per, allowance, last_check
+                    rate_limited[key]['rate'], rate_limited[key]['per'], rate_limited[key]['allowance'], rate_limited[key]['last_check'], rate_limited[key]['start_time'] = rate, per, allowance, last_check, start_time
                 elif is_threaded(mes.prefix):
                     t = threading.Thread(target=handle_message, args=[mes])
                     t.daemon = True
@@ -470,7 +480,7 @@ def main():
         if data[0:4] == 'PING':
             send(data.replace('I', 'O', 1), irc)
 
-        #join channels listed in config file
+        # join channels listed in config file
         if data.split()[1] == '376':
             send('JOIN %s' % ','.join(config['channels']), irc)
 
