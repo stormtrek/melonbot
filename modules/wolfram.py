@@ -17,7 +17,7 @@ with open(args.config) as fd:
     
 app_id = config['wolfram_alpha_key']
 
-div = ' ➤ '
+div = '  ➤ '
 numOfPods = 3
 
 def waSearch(search, return_data=False, dict_version=False):
@@ -80,16 +80,18 @@ def waSearch(search, return_data=False, dict_version=False):
     if output:
         return formatting(output, dict_version)
     else:
-        return 'No results'
+        timed_out_subject = root.get('timedout')
+        if not timed_out_subject:
+            return 'No results. Tip: Check your spelling, and use English.'
+        else:
+            return 'Query relating to "{}" timed out. Please try again later.'.format(timed_out_subject)
 
 
 def formatting(output, dict_version=False):
     if dict_version:
-        output = re.sub('\r', ' ➤ ', output)
-        output = re.sub('\n', ' ➤ ', output)
+        output = re.sub('(\r|\n)', '  ➤ ', output)
     else:
-        output = re.sub('\r', '  ◆  ', output)
-        output = re.sub('\n', '  ◆  ', output)
+        output = re.sub('( \| )?(\r|\n)', '  ◆  ', output)
     for m in re.findall(r'\\:[a-f0-9]{4}', output):
         output = re.sub(re.escape(m), chr(int(m[2:], 16)), output)
     return output[:-len(div)].replace('', '=')

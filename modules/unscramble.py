@@ -34,7 +34,7 @@ def generate_scramble(channel, irc):
     global word, first_hint, second_hint, current_hint, scrambled_word, check_for_answer
     
     if channel not in enabled_channels:
-        return 'Disabled here. Please play in {0}'.format(enabled_channels[0])
+        return 'Disabled here. Please ask admin for location of playable channels.'
 
     if second_winner_thread.isAlive():
         return

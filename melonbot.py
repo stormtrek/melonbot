@@ -48,7 +48,7 @@ sleep_duration = 10
 commands = {
                 "admin_control": ['mel', 'melon'],
                 "add_note": ["addnote"],
-                "at_reminder": ["at"],
+                "at_reminder": ["at", "on"],
                 "bitly": ["bitly", "short", "shorten"],
                 "cake": ["cake"],
                 "coffee": ["coffee"],

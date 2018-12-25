@@ -6,7 +6,7 @@ import bs4
 import re
 
 def getJoke():
-    value = 2778
+    value = 4011
     s = requests.Session()
     s.headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/600.3.18 (KHTML, like Gecko) Version/8.0.3 Safari/600.3.18'
     offset = random.randint(0, math.floor(int(value)/20)) * 20
